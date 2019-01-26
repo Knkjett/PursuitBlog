@@ -2,6 +2,7 @@ const express = require('express');
 const userRouter = express.Router();
 const UserService = require('../services/user')
 const PostRouter = require('../routes/post')
+const CommentRouter = require('../routes/comment')
 const bcrypt = require('bcrypt');
 const shortid = require('shortid');
 const saltRounds = 10;
@@ -171,7 +172,9 @@ userRouter.post('/login', (req, res) => {
                 if (confirm) {
                     userToken = shortid.generate();
                     currentToken = userToken;
-                    UserService.token(username, userToken)
+                    PostRouter.chgToken(currentToken);//Sends Current Token to PostRouter.
+                    CommentRouter.chgToken(currentToken);//Sends Current Token to CommentRouter.
+                    UserService.token(username, userToken);
                     res.json(`Logged into ${username}`);
                 } else
                     res.json("Wrong Username or Password.")
@@ -181,19 +184,5 @@ userRouter.post('/login', (req, res) => {
             res.json(err.toString())
         })
 })
-
-
-// userRouter.ckToken = (id) => {
-//     return db.one('SELECT token FROM users WHERE id = ${id}', {
-//         id
-//     })
-// }
-// userRouter.grabUserTk = () =>{
-//     console.log("userToken")
-//     return userToken;
-// }
-// const grabCurrentTk = () =>{
-//     return currentToken;
-// }
 
 module.exports = userRouter;

@@ -11,8 +11,8 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 app.use('/user', userRouter);
-app.use('/post', postRouter);
-// app.use('/comment', commentRouter);
+app.use('/post', postRouter.postRouter);
+app.use('/comment', commentRouter.commentRouter);
 
 app.listen(port, ()=>{
     console.log(`Listening. Blog on port: ${port}`)

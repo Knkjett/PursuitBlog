@@ -2,7 +2,7 @@ const pgp = require('pg-promise')({});
 const db = pgp('postgres://postgres:123@localhost:5432/blog');
 const PostService = {};
 
-PostService.create = (author, title, body) =>{
+PostService.create = (author, title, body) => {
     return db.none('INSERT INTO posts (author, title, body) VALUES (${author}, ${title}, ${body});', {
         author,
         title,
@@ -10,11 +10,11 @@ PostService.create = (author, title, body) =>{
     });
 }
 PostService.read = (post_id) => {
-    return db.one('SELECT * FROM posts WHERE id=${post_id};',{
+    return db.one('SELECT * FROM posts WHERE id=${post_id};', {
         post_id
     });
 }
-PostService.update = (title, body, post_id) =>{
+PostService.update = (title, body, post_id) => {
     return db.none('UPDATE posts SET title = ${title}, body = ${body} WHERE id=${post_id}', {
         title,
         body,
@@ -22,25 +22,39 @@ PostService.update = (title, body, post_id) =>{
     })
 }
 PostService.delete = (post_id) => {
-    return db.none ('DELETE FROM comments WHERE post_id = ${post_id}; DELETE FROM posts WHERE id = ${post_id}', {
+    return db.none('DELETE FROM comments WHERE post_id = ${post_id}; DELETE FROM posts WHERE id = ${post_id}', {
         post_id
     })
 }
 //GET /post/:post_id/comments
-PostService.readComments = (post_id) =>{
+PostService.readComments = (post_id) => {
     return db.any('SELECT posts.author , comments.* FROM comments JOIN posts ON id=author WHERE post_id = ${post_id};', {
         post_id
     });
 }
 //GET /post/:post_id/comments/:comment_id
-PostService.readComment = (post_id,comment_id) =>{
+PostService.readComment = (post_id, comment_id) => {
     return db.one('SELECT posts.author , comments.* FROM comments JOIN posts ON post_id=author WHERE (id = ${post_id} AND comments.id = ${comment_id});', {
         post_id,
         comment_id
     });
 }
 //Grab Author
-PostService.getAuthor = () =>{
-    
+PostService.getAuthor = (token) => {
+    return db.one('SELECT id FROM users WHERE token = ${token}', {
+        token
+    });
+}
+//Grab id from POST ID
+PostService.getIDfromPost = (post_id) =>{
+    return db.one('SELECT author FROM posts WHERE id = ${post_id}',{
+        post_id
+    })
+}
+//Compare Author with id return Token to be used to compare
+PostService.compareToken = (id) =>{
+    return db.one ('SELECT token FROM users WHERE id = ${id}',{
+        id
+    });
 }
 module.exports = PostService;

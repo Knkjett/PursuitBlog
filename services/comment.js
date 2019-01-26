@@ -21,11 +21,11 @@ CommentService.read = (comment_id) => {
 }
 // PUT /comment/:comment_id
 CommentService.update = (title, body, comment_id) => {
-    return db.none('UPDATE comments SET title = ${title}, body = ${body} WHERE id = ${comment_id}};', {
+    return db.none('UPDATE comments SET title = ${title}, body = ${body} WHERE id=${comment_id}', {
         title,
         body,
         comment_id
-    });
+    })
 }
 // DEL /comment/:comment_id
 CommentService.delete = (comment_id) => {
@@ -33,5 +33,19 @@ CommentService.delete = (comment_id) => {
         comment_id
     });
 }
-
+CommentService.getAuthor = (token) => {
+    return db.one('SELECT id FROM users WHERE token = ${token}', {
+        token
+    });
+}
+CommentService.getIDfromComment = (comment_id) =>{
+    return db.one('SELECT author FROM comments WHERE id = ${comment_id}',{
+        comment_id
+    })
+}
+CommentService.compareToken = (id) =>{
+    return db.one ('SELECT token FROM users WHERE id = ${id}',{
+        id
+    });
+}
 module.exports = CommentService;
